@@ -10,7 +10,7 @@ from app.repositories.infrastructure.db.database import Database
 DATABASE_CONFIG = {
     "dbname": os.getenv('DB_NAME', 'events_db'),
     "user": os.getenv('DB_USER', 'user'),
-    "password": os.getenv('PASSWORD', 'password'),
+    "password": os.getenv('DB_PASSWORD', 'mysecretpassword'),
     "host": os.getenv('DB_HOST', 'localhost'),
     "port": os.getenv('DB_PORT', '5432')
 }
