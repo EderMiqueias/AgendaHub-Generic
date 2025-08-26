@@ -1,15 +1,14 @@
 from app.models.event_model import Event
 from app.repositories.event_repository import EventRepository
+from app.repositories.infrastructure.db.db_postgres import PostgresDB
 
 
 class EventService:
     def __init__(self):
-        self.repository = EventRepository()
+        self.repository = EventRepository(PostgresDB())
 
     def create_event(self, event: Event) -> Event:
-        if not event.title:
-            raise ValueError("O título é obrigatório")
-        return self.repository.save(event)
+        return self.repository.create(event)
 
     def get_events(self) -> list[Event]:
         return self.repository.find_all()
