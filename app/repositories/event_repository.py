@@ -1,20 +1,33 @@
 from app.models.event_model import Event
+from app.repositories.infrastructure.db.database import Database
 
 
 class EventRepository:
-    def save(self, event: Event) -> Event:
-        event.id = len(_fake_db) + 1
-        _fake_db.append(event)
+    _db_service: Database
+
+    def __init__(self, db_service: Database):
+        self._db_service = db_service
+
+    def create(self, event: Event) -> Event:
+        insert_event_query = """
+            INSERT INTO events (title, description, date)
+            VALUES (%s, %s, %s) RETURNING id
+        """
+        event.id = self._db_service.execute_query(insert_event_query, (event.title, event.description, event.date))
         return event
 
     def find_all(self) -> list[Event]:
-        return _fake_db
+        return self._db_service.fetch_all("""
+            SELECT id, title, description, date FROM events
+        """)
 
     def find_by_id(self, event_id: int) -> Event | None:
-        return next((e for e in _fake_db if e.id == event_id), None)
+        return self._db_service.fetch_one("""
+            select id, title, description, date from events where id = %s
+        """, (event_id,))
 
     def delete(self, event_id: int) -> bool:
-        global _fake_db
-        before = len(_fake_db)
-        _fake_db = [e for e in _fake_db if e.id != event_id]
-        return len(_fake_db) < before
+        self._db_service.execute_query("""
+            DELETE FROM events WHERE id = %s
+        """, (event_id,))
+        return True
