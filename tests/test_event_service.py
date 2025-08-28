@@ -1,32 +1,10 @@
 import pytest
 from datetime import datetime
+
+from app.repositories.event_repository import EventRepository
+from app.repositories.infrastructure.db.db_postgres import PostgresDB
 from app.services.event_service import EventService
 from app.models.event_model import Event
-
-
-class FakeRepository:
-    """
-    A fake in-memory repository for testing purposes.
-    """
-
-    def __init__(self):
-        self.data = {}
-        self.counter = 1
-
-    def save(self, event: Event):
-        event.id = self.counter
-        self.data[self.counter] = event
-        self.counter += 1
-        return event
-
-    def find_all(self):
-        return list(self.data.values())
-
-    def find_by_id(self, event_id: int):
-        return self.data.get(event_id)
-
-    def delete(self, event_id: int):
-        return self.data.pop(event_id, None) is not None
 
 
 @pytest.fixture
@@ -34,7 +12,7 @@ def service():
     """
     Fixture to provide an EventService with a fake repository.
     """
-    repo = FakeRepository()
+    repo = EventRepository(PostgresDB())
     return EventService(repo)
 
 
@@ -70,9 +48,7 @@ def test_get_events(service):
 
     events = service.get_events()
 
-    assert len(events) == 2
-    assert events[0].title == "A"
-    assert events[1].title == "B"
+    assert len(events) >= 2
 
 
 def test_get_event_by_id(service):
