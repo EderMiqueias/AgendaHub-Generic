@@ -23,7 +23,6 @@ services:
     volumes:
       - ./app:/app   # monta a pasta app no /app do container
     working_dir: /app
-    command: python app/main.py
     environment:
       DB_NAME: events_db
       DB_USER: user
