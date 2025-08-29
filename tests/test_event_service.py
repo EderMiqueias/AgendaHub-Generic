@@ -43,9 +43,6 @@ def test_get_events(service):
     """
     Test retrieving all events.
     """
-    service.create_event(Event(title="A", description="desc", date=datetime.now()))
-    service.create_event(Event(title="B", description="desc", date=datetime.now()))
-
     events = service.get_events()
 
     assert len(events) >= 2
