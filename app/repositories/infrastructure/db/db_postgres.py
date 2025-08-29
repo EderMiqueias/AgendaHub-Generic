@@ -1,7 +1,7 @@
 import os
+from typing import List
 
 import psycopg2
-import psycopg2.extras
 from contextlib import contextmanager
 
 from app.repositories.infrastructure.db.database import Database
@@ -30,21 +30,31 @@ class PostgresDB(Database):
         finally:
             conn.close()
 
-    def fetch_all(self, query: str, params: tuple = ()):
+    def fetch_all(self, *args, **kwargs):
         with self.get_connection() as conn:
-            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
-                cur.execute(query, params)
-                return cur.fetchall()
+            with conn.cursor() as cur:
+                cur.execute(*args)
+
+                if cur.description is None:
+                    return None
+
+                columns = [value.name for value in cur.description]
+
+                query_result = [
+                    dict(zip(columns, row))
+                    for row in cur.fetchall()
+                ]
+
+            return query_result
 
     def fetch_one(self, query: str, params: tuple = ()):
         with self.get_connection() as conn:
-            with conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor) as cur:
+            with conn.cursor() as cur:
                 cur.execute(query, params)
                 return cur.fetchone()
 
-    def execute_query(self, query: str, params: tuple = ()):
+    def execute_query(self, query: str, params: tuple = ()) -> List[dict]:
         with self.get_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(query, params)
-                conn.commit()
-                return cur.rowcount
+            result = self.fetch_all(query, params)
+            conn.commit()
+            return result
