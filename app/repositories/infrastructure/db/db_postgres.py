@@ -30,10 +30,12 @@ class PostgresDB(Database):
         finally:
             conn.close()
 
-    def fetch_all(self, *args, **kwargs):
+    def fetch_all(self, *args, commit: bool = False, **kwargs):
         with self.get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(*args)
+                if commit:
+                    conn.commit()
 
                 if cur.description is None:
                     return None
@@ -54,7 +56,4 @@ class PostgresDB(Database):
                 return cur.fetchone()
 
     def execute_query(self, query: str, params: tuple = ()) -> List[dict]:
-        with self.get_connection() as conn:
-            result = self.fetch_all(query, params)
-            conn.commit()
-            return result
+        return self.fetch_all(query, params, commit=True)
