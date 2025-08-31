@@ -53,7 +53,15 @@ class PostgresDB(Database):
         with self.get_connection() as conn:
             with conn.cursor() as cur:
                 cur.execute(query, params)
-                return cur.fetchone()
+                result = cur.fetchone()
+                if cur.description is None or result is None:
+                    return None
+
+                columns = [value.name for value in cur.description]
+
+                query_result = dict(zip(columns, result))
+
+                return query_result
 
     def execute_query(self, query: str, params: tuple = ()) -> List[dict]:
         return self.fetch_all(query, params, commit=True)
