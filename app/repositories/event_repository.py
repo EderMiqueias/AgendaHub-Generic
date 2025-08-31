@@ -14,9 +14,11 @@ class EventRepository:
             VALUES (%s, %s, %s)
             RETURNING id
         """
+
         event.id = self._db_service.execute_query(
-            insert_event_query, (event.title, event.description, event.date)
+            insert_event_query, (event.title, event.description, event.event_date)
         )[0]['id']
+
         return event
 
     def find_all(self) -> list[Event]:
