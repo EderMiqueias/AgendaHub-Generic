@@ -1,1 +1,1 @@
-from .event_controller import *
+from .event_controllers import app_fastapi
