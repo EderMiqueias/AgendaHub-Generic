@@ -17,18 +17,22 @@ services:
       timeout: 5s
       retries: 5
 
-  app:
+  app-fastapi:
     build: .
-    container_name: agenda_hub
+    container_name: agenda_hub_fastapi
     volumes:
-      - ./app:/app   # monta a pasta app no /app do container
+      - .:/app  # Mapeia a raiz (onde estão os scripts e a pasta /app)
     working_dir: /app
+    profiles: ["fastapi"]
+    ports:
+      - "8000:8000"
     environment:
+      APP_FRAMEWORK: fastapi
       DB_NAME: events_db
       DB_USER: user
       DB_PASSWORD: mysecretpassword
       DB_HOST: postgres
-      DB_PORT: 5433
+      DB_PORT: 5432
     depends_on:
       postgres:
         condition: service_healthy
