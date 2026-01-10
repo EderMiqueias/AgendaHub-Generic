@@ -6,7 +6,7 @@ framework = os.getenv("APP_FRAMEWORK", "fastapi").lower()
 if framework == "fastapi":
     from run_fastapi import app
 elif framework == "flask":
-    from run_flask import app
+    from run_flask import asgi_app as app
 else:
     raise RuntimeError(f"Framework inválido: {framework}")
 

@@ -1,3 +1,5 @@
-from app.controllers import app_fastapi
+from app.controllers import app_flask
+from asgiref.wsgi import WsgiToAsgi
 
-app = app_fastapi()
+app = app_flask()
+asgi_app = WsgiToAsgi(app)
