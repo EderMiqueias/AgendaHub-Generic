@@ -23,7 +23,7 @@ class EventResource(Resource):
 
 
 def get_app():
-    app = App()
+    app = App(__name__)
     app.add_route('/events', EventResource())
     return app
 
