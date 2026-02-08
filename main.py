@@ -4,7 +4,7 @@ from wsgiref.simple_server import make_server
 import uvicorn
 
 
-framework = os.getenv("APP_FRAMEWORK", "fastapi").lower()
+framework = os.getenv("APP_FRAMEWORK", "pebarest").lower()
 
 if framework == "fastapi":
     from run_fastapi import app
