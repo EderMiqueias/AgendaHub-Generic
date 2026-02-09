@@ -59,6 +59,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  app-falcon:
+    build: .
+    container_name: agenda_hub_falcon
+    volumes:
+      - .:/app
+    working_dir: /app
+    profiles: [ "falcon" ]
+    ports:
+      - "8000:8000"
+    environment:
+      APP_FRAMEWORK: falcon
+      DB_NAME: events_db
+      DB_USER: user
+      DB_PASSWORD: mysecretpassword
+      DB_HOST: postgres
+      DB_PORT: 5432
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
   app-pebarest:
     build: .
     container_name: agenda_hub_pebarest
