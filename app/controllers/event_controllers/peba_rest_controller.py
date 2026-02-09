@@ -1,3 +1,4 @@
+import pebarest.exceptions
 from pebarest import App
 from pebarest.models import Resource, Request
 
@@ -22,9 +23,25 @@ class EventResource(Resource):
             return {"detail": str(e)}, 400
 
 
+class EventWithParamsResource(Resource):
+    service = get_event_service()
+
+    def get(self, request: Request, *args, **kwargs):
+        event_id = request.params['event_id']
+        return self.service.get_event(event_id)
+
+    def delete(self, request: Request[Event], *args, **kwargs):
+        event_id = request.params['event_id']
+        deleted = self.service.delete_event(event_id)
+        if not deleted:
+            raise pebarest.exceptions.NotFoundError(message="Evento não encontrado")
+        return deleted
+
+
 def get_app():
     app = App(__name__)
     app.add_route('/events', EventResource())
+    app.add_route('/events/{event_id}', EventResource())
     return app
 
 
